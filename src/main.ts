@@ -1,16 +1,24 @@
 
-import {bootstrapCameraKit} from '@snap/camera-kit';
+import {bootstrapCameraKit, Transform2D, createMediaStreamSource} from '@snap/camera-kit';
 
 
 (async function () {
   const cameraKit = await bootstrapCameraKit({ apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzAwMDg1OTM0LCJzdWIiOiI3ZDc2MTI5OC04OTM2LTRlNTEtYWU2Yy02NzgxNjU5NDIxZDl-U1RBR0lOR34xYTY0YjdlZi03MmIwLTRhNzYtYmI4MC1iODZiMTkxZGUwYWQifQ.1V5j6FCDOhS6lumOR1FsmcAQKVRux5IAgXfbVZYIq3I'});
 
-  const liveRenderTarget = document.getElementById('canvas') as HTMLCanvasElement;
+  const liveRenderTarget = document.getElementById('myCanvas') as HTMLCanvasElement;
   const session = await cameraKit.createSession({liveRenderTarget});
+  
+
 
   const mediaStream = await navigator.mediaDevices.getUserMedia({video: true,});
-  await session.setSource(mediaStream);
 
+  const source = createMediaStreamSource(mediaStream, {
+    transform: Transform2D.MirrorX,
+  });
+
+
+  await session.setSource(source);
+  source.setRenderSize(1280, 980);
   await session.play();
 
 
